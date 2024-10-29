@@ -44,12 +44,21 @@ def map_label_bert(label):
 def do_analysis(df, model, output_file_path):
     dataset = Dataset.from_pandas(df[['cleantext']].dropna())
 
+    if model == MODEL_BERT:
+        map_function = map_label_bert
+    elif model == MODEL_DISTILBERT:
+        map_function = map_label_distiblert
+    elif model == MODEL_BERTWEET:
+        map_function = map_label_bertweet
+    elif model == MODEL_ROBERTA:
+        map_function = map_label_roberta
+
     sentiment_pipeline = pipeline('sentiment-analysis', model=model, device=0)
 
     # Un asco esto
     def analyze_sentiment(batch):
         sentiment_result = sentiment_pipeline(batch['cleantext'])[0]
-        batch['sentiment'] = map_label_bert(sentiment_result['label'])
+        batch['sentiment'] = map_function(sentiment_result['label'])
         return batch
 
     results = dataset.map(analyze_sentiment, batched=False)
