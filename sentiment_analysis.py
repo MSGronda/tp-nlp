@@ -1,0 +1,61 @@
+import pandas as pd
+from datasets import Dataset
+from transformers import pipeline
+
+MODEL_BERT = 'nlptown/bert-base-multilingual-uncased-sentiment'
+MODEL_DISTILBERT = 'DT12the/distilbert-sentiment-analysis'
+MODEL_BERTWEET = 'finiteautomata/bertweet-base-sentiment-analysis'
+MODEL_ROBERTA = 'cardiffnlp/twitter-roberta-base-sentiment'
+
+def map_label_roberta(label):
+    if label == 'LABEL_0':
+        return 'negative'
+    elif label == 'LABEL_1':
+        return 'neutral'
+    elif label == 'LABEL_2':
+        return 'positive'
+
+def map_label_bertweet(label):
+    if label == 'NEG':
+        return 'negative'
+    elif label == 'NEU':
+        return 'neutral'
+    elif label == 'POS':
+        return 'positive'
+
+def map_label_distiblert(label):
+    if label == 'LABEL_0':
+        return 'negative'
+    elif label == 'LABEL_1':
+        return 'neutral'
+    elif label == 'LABEL_2':
+        return 'positive'
+    raise ValueError(label)
+
+def map_label_bert(label):
+    if label  == '1 star' or label == '2 stars':
+        return 'negative'
+    elif label == '3 stars':
+        return 'neutral'
+    else:
+        return 'positive'
+
+
+def do_analysis(df, model, output_file_path):
+    dataset = Dataset.from_pandas(df[['cleantext']].dropna())
+
+    sentiment_pipeline = pipeline('sentiment-analysis', model=model, device=0)
+
+    # Un asco esto
+    def analyze_sentiment(batch):
+        sentiment_result = sentiment_pipeline(batch['cleantext'])[0]
+        batch['sentiment'] = map_label_bert(sentiment_result['label'])
+        return batch
+
+    results = dataset.map(analyze_sentiment, batched=False)
+
+    result_df = pd.DataFrame(results)
+
+    result_df.to_csv(output_file_path, index=False)
+
+
