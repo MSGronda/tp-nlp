@@ -1,6 +1,7 @@
 import pandas as pd
 from datasets import Dataset
 from transformers import pipeline
+from vaderSentiment.vaderSentiment import SentimentIntensityAnalyzer
 
 MODEL_BERT = 'nlptown/bert-base-multilingual-uncased-sentiment'
 MODEL_DISTILBERT = 'DT12the/distilbert-sentiment-analysis'
@@ -67,4 +68,26 @@ def do_analysis(df, model, output_file_path):
 
     result_df.to_csv(output_file_path, index=False)
 
+def do_vader_analysis(df, output_file_path):
+    analyzer = SentimentIntensityAnalyzer()
 
+    def get_vader_sentiment(text):
+        return analyzer.polarity_scores(text)
+    df['vader_sentiment'] = df['cleantext'].apply(get_vader_sentiment)
+    df['vader_compound'] = df['vader_sentiment'].apply(lambda score_dict: score_dict['compound'])
+
+    def get_vader_analysis(compound):
+        if compound >= 0.05:
+            return 'positive'
+        elif compound <= -0.05:
+            return 'negative'
+        else:
+            return 'neutral'
+
+    df['sentiment'] = df['vader_compound'].apply(get_vader_analysis)
+
+    df.drop(columns=['vader_sentiment', 'vader_compound'], inplace=True)
+
+    result_df = df[['cleantext', 'sentiment']]
+
+    result_df.to_csv(output_file_path, index=False)

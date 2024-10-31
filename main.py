@@ -2,8 +2,10 @@ import os
 
 import pandas as pd
 
+from graph import graph_distribution
 from preprocessing import  clean_tweets, filter_english
-from sentiment_analysis import do_analysis, MODEL_BERT
+from sentiment_analysis import do_analysis, MODEL_BERT, MODEL_DISTILBERT, MODEL_BERTWEET, MODEL_ROBERTA, \
+    do_vader_analysis
 
 if __name__ == '__main__':
 
@@ -26,7 +28,10 @@ if __name__ == '__main__':
 
 
     print("Starting sentiment analysis")
-    do_analysis(df, MODEL_BERT, './bert.csv')
+    do_vader_analysis(df, './vader.csv')
+    do_analysis(df, MODEL_DISTILBERT, './distilbert.csv')
+    do_analysis(df, MODEL_BERTWEET, './bertweet.csv')
+    do_analysis(df, MODEL_ROBERTA, './roberta.csv')
     print("Sentiment analysis complete")
 
 
