@@ -5,7 +5,6 @@ from wordcloud import WordCloud, STOPWORDS
 import matplotlib.pyplot as plt
 from collections import Counter
 
-
 import nltk
 nltk.download('stopwords')
 from nltk.corpus import stopwords as nltkStopwords
@@ -28,6 +27,8 @@ stopwords.update(['de', 'en', 'que', 'se', 'y'])
 spanish_stopwords = set(nltkStopwords.words('spanish'))
 stopwords.update(spanish_stopwords)
 
+stopwords.update(['trump', 'trumps', 'donald', 'biden', 'joe', 'kamala', 'harris', 'donaldtrump','realdonaldtrump', 'joebiden', 'bidenharris'])
+
 print("Creating WordCloud")
 wordcloud = WordCloud(
     width=800,
@@ -37,12 +38,13 @@ wordcloud = WordCloud(
     collocations=False
 ).generate(text)
 
+# Display the word cloud image
 plt.figure(figsize=(10, 5))
 plt.imshow(wordcloud, interpolation='bilinear')
 plt.axis('off')
 plt.show()
 
-wordcloud.to_file('wordcloud_image.png')
+wordcloud.to_file('wordcloud_image_without_names.png')
 
 
 print("Processing most frequent words")
@@ -55,12 +57,11 @@ top_20 = word_counts.most_common(20)
 
 words, counts = zip(*top_20)
 
-# Plotting the bar graph
 plt.figure(figsize=(10, 6))
 plt.barh(words, counts, color='skyblue')
 plt.xlabel('Frecuencia')
 plt.ylabel('Palabra')
-plt.gca().invert_yaxis()  # Invert y-axis to show the highest count at the top
+plt.gca().invert_yaxis()
 plt.show()
 
 
@@ -73,7 +74,6 @@ for word in words:
 
 percentages = [(word_presence[word] / tweet_count) * 100 for word in words]
 
-# Plot the bar graph of word percentages
 plt.figure(figsize=(10, 6))
 plt.barh(words, percentages, color='lightcoral')
 plt.xlabel('Porcentaje de aparicion')

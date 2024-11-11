@@ -16,7 +16,6 @@ for model in model_columns:
 
 metrics = {model: {} for model in model_columns}
 
-# Calculate metrics for each model
 for model in model_columns:
     metrics[model]['precision'] = precision_score(data[true_column], data[model], average='weighted')
     metrics[model]['recall'] = recall_score(data[true_column], data[model], average='weighted')

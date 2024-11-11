@@ -84,12 +84,10 @@ top_negative_words = coef_df.nsmallest(7, 'coefficient')
 
 fig, ax = plt.subplots(1, 2, figsize=(14, 6))
 
-# Top Positive Coefficients
 ax[0].barh(top_positive_words['word'], top_positive_words['coefficient'], color='green')
 ax[0].set_title("Top 7 Positive Word Coefficients")
 ax[0].set_xlabel("Coefficient Value")
 
-# Top Negative Coefficients
 ax[1].barh(top_negative_words['word'], top_negative_words['coefficient'], color='red')
 ax[1].set_title("Top 7 Negative Word Coefficients")
 ax[1].set_xlabel("Coefficient Value")
